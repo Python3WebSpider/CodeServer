@@ -77,11 +77,24 @@ RUN echo "source <(kubectl completion bash)" >> /home/coder/.bashrc && \
 RUN /usr/bin/code-server --install-extension ms-python.python && \
     /usr/bin/code-server --install-extension esbenp.prettier-vscode && \
     /usr/bin/code-server --install-extension equinusocio.vsc-material-theme && \
-    /usr/bin/code-server --install-extension octref.vetur
+    /usr/bin/code-server --install-extension codezombiech.gitignore && \
+    /usr/bin/code-server --install-extension piotrpalarz.vscode-gitignore-generator && \
+    /usr/bin/code-server --install-extension ms-vscode.cpptools && \
+    /usr/bin/code-server --install-extension aeschli.vscode-css-formatter && \
+    /usr/bin/code-server --install-extension ms-azuretools.vscode-docker && \
+    /usr/bin/code-server --install-extension donjayamanne.githistory && \
+    /usr/bin/code-server --install-extension ecmel.vscode-html-css && \
+    /usr/bin/code-server --install-extension pkief.material-icon-theme && \
+    /usr/bin/code-server --install-extension equinusocio.vsc-material-theme-icons && \
+    /usr/bin/code-server --install-extension eg2.vscode-npm-script && \
+    /usr/bin/code-server --install-extension dbaeumer.vscode-eslint && \
+    /usr/bin/code-server --install-extension TabNine.tabnine-vscode
 
 RUN /usr/bin/python3 -m pip install requests aiohttp pyquery selenium pylint flask
 
-WORKDIR /home/coder/project
+COPY settings.json /home/coder/.local/share/code-server/User/settings.json
+
+WORKDIR /home/coder/workspace
 
 EXPOSE 8080
 

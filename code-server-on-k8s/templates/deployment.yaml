@@ -17,13 +17,13 @@ spec:
       automountServiceAccountToken: true
       containers:
         - name: code-server
-          image: germey/code-server:2
+          image: germey/code-server:4
           ports:
             - containerPort: 8080
               name: code-server
           securityContext:
             privileged: true
-            runAsUser: 0
+            # runAsUser: 0
           env:
             - name: PASSWORD
               valueFrom:
