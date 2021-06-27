@@ -79,7 +79,7 @@ RUN /usr/bin/code-server --install-extension ms-python.python && \
     /usr/bin/code-server --install-extension equinusocio.vsc-material-theme && \
     /usr/bin/code-server --install-extension octref.vetur
 
-RUN python3 -m pip install requests aiohttp pyquery
+RUN /usr/bin/python3 -m pip install requests aiohttp pyquery selenium pylint flask
 
 WORKDIR /home/coder/project
 
