@@ -18,17 +18,6 @@ spec:
         - name: code-server
           persistentVolumeClaim:
             claimName: code-server-pvc
-      initContainers:
-        - name: permission-fix
-          image: busybox
-          command: ["sh", "-c"]
-          args: ["chmod -R 777 /home/coder"]
-          securityContext:
-            privileged: true
-          volumeMounts:
-            - mountPath: "/home/coder"
-              name: code-server
-              # subPath: {{ .Values.user }}
       containers:
         - name: code-server
           image: gashirar/code-server-on-k8s:latest
@@ -37,10 +26,11 @@ spec:
               name: code-server
           securityContext:
             privileged: true
+            runAsUser: 0
           volumeMounts:
             - mountPath: "/home/coder"
               name: code-server
-              # subPath: {{ .Values.user }}
+              subPath: {{ .Values.user }}
           env:
             - name: PASSWORD
               valueFrom:
