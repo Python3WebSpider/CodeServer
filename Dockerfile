@@ -10,7 +10,9 @@ RUN apt-get update && apt-get install -y \
     vim \
     curl \
     wget \
-    bash-completion
+    bash-completion \
+    python3 \
+    python3-pip
 
 RUN chsh -s /bin/bash
 ENV SHELL=/bin/bash
@@ -22,7 +24,7 @@ RUN ARCH=amd64 && \
     mkdir -p /etc/fixuid && \
     printf "user: coder\ngroup: coder\n" > /etc/fixuid/config.yml
 
-RUN CODE_SERVER_VERSION=3.3.1 && \
+RUN CODE_SERVER_VERSION=3.10.2 && \
     curl -sSOL https://github.com/cdr/code-server/releases/download/v${CODE_SERVER_VERSION}/code-server_${CODE_SERVER_VERSION}_amd64.deb && \
     sudo dpkg -i code-server_${CODE_SERVER_VERSION}_amd64.deb
 
@@ -71,6 +73,13 @@ ENV PASSWORD=${PASSWORD:-P@ssw0rd}
 
 RUN echo "source <(kubectl completion bash)" >> /home/coder/.bashrc && \
     echo 'export PS1="\[\e]0;\u@\h: \w\a\]\[\033[01;32m\]\u\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ "' >> /home/coder/.bashrc
+
+RUN /usr/bin/code-server --install-extension ms-python.python && \
+    /usr/bin/code-server --install-extension esbenp.prettier-vscode && \
+    /usr/bin/code-server --install-extension equinusocio.vsc-material-theme && \
+    /usr/bin/code-server --install-extension octref.vetur
+
+RUN python3 -m pip install requests aiohttp pyquery
 
 WORKDIR /home/coder/project
 

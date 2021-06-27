@@ -1,6 +1,5 @@
 # Kubernetes namespace
 namespace: "scrape"
-
 # Basic Authentication Username
 user: "user"
 # Basic Authentication Password
