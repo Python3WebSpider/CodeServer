@@ -1,8 +1,7 @@
-apiVersion: v1
-name: code-server-on-k8s
+apiVersion: v2
+name: code-server
 description: A Web-IDE for Kubernetes
 version: 0.1.0
-kubeVersion: ">=1.11.0"
 keyword:
   - code-server
 home: https://github.com/gashirar/code-server-on-kubernetes

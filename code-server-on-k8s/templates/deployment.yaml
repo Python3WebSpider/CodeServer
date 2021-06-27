@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: code-server-{{ .Values.user }}
-  namespace: {{ .Values.namespace }}
 spec:
   selector:
     matchLabels:
@@ -15,22 +14,43 @@ spec:
     spec:
       serviceAccountName: code-server-{{ .Values.user }}
       automountServiceAccountToken: true
+      volumes:
+        - name: code-server
+          persistentVolumeClaim:
+            claimName: code-server-pvc
+      initContainers:
+        - name: permission-fix
+          image: busybox
+          command: ["sh", "-c"]
+          args: ["chmod -R 777 /home/coder"]
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: "/home/coder"
+              name: code-server
+              # subPath: {{ .Values.user }}
       containers:
-      - name: code-server
-        image: gashirar/code-server-on-k8s:latest
-        ports:
-        - containerPort: 8080
-          name: code-server
-        securityContext:
-          privileged: true
-        env:
-        - name: PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: code-server-{{ .Values.user }}
-              key: password
-        resources:
-          limits:
-            memory: 1Gi
-          requests:
-            memory: 1Gi
+        - name: code-server
+          image: gashirar/code-server-on-k8s:latest
+          ports:
+            - containerPort: 8080
+              name: code-server
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: "/home/coder"
+              name: code-server
+              # subPath: {{ .Values.user }}
+          env:
+            - name: PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: code-server-{{ .Values.user }}
+                  key: password
+          resources:
+            limits:
+              memory: 1Gi
+              cpu: 500m
+            requests:
+              memory: 400Mi
+              cpu: 200m

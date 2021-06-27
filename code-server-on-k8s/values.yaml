@@ -1,15 +1,7 @@
-# Default Values
-
 # Kubernetes namespace
-namespace: "code-server"
+namespace: "scrape"
 
 # Basic Authentication Username
 user: "user"
 # Basic Authentication Password
 password: "P@ssw0rd"
-
-# IP whitelist
-loadBalancerSourceRanges: [] 
-
-# Ingress Hostname
-host: code-server.dev
