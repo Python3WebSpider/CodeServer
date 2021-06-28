@@ -15,12 +15,24 @@ spec:
     spec:
       serviceAccountName: code-server-{{ .Values.user }}
       automountServiceAccountToken: true
+      {{ if eq .Values.persistance "true" }}
+      volumes:
+        - name: coder-server-{{ .Values.user }}
+          persistentVolumeClaim:
+            claimName: coder-server-{{ .Values.user }}
+      {{ end }}
       containers:
         - name: code-server
-          image: germey/code-server:4
+          image: {{ .Values.image }}
           ports:
             - containerPort: 8080
               name: code-server
+          {{ if eq .Values.persistance "true" }}
+          volumeMounts:
+            - mountPath: "/home/coder/workspace"
+              subPath: 'workspace'
+              name: coder-server-{{ .Values.user }}
+          {{ end }}
           securityContext:
             privileged: true
             # runAsUser: 0
@@ -32,8 +44,8 @@ spec:
                   key: password
           resources:
             limits:
-              memory: 1Gi
-              cpu: 500m
+              memory: 700Mi
+              cpu: 300m
             requests:
               memory: 300Mi
-              cpu: 100m
+              cpu: 50m

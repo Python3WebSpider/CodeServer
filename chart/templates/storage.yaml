@@ -1,0 +1,14 @@
+{{ if eq .Values.persistance "true" }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: coder-server-{{ .Values.user }}
+  namespace: {{ .Values.namespace }}
+spec:
+  storageClassName: cbs
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+{{ end }}

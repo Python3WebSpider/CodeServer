@@ -4,3 +4,7 @@ namespace: "scrape"
 user: "user"
 # Basic Authentication Password
 password: "P@ssw0rd"
+# Image
+image: "germey/code-server:8"
+# Persistance
+persistance: "true"

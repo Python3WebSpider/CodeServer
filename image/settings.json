@@ -5,16 +5,14 @@
   "editor.tabSize": 2,
   "editor.detectIndentation": false,
   "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.fontSize": 16,
+  "editor.suggestSelection": "first",
   "files.autoGuessEncoding": true,
   "files.autoSave": "afterDelay",
-  "editor.suggestSelection": "first",
+  "terminal.integrated.inheritEnv": false,
   "vetur.experimental.templateInterpolationService": true,
-  "workbench.editorAssociations": {
-    "*.ipynb": "jupyter.notebook.ipynb"
-  },
-  "python.languageServer": "Pylance",
   "[typescript]": {
     "editor.tabSize": 2
   },
@@ -24,7 +22,5 @@
   "[python]": {
     "editor.tabSize": 4,
     "editor.defaultFormatter": "ms-python.python"
-  },
-  "terminal.integrated.inheritEnv": false,
-  "editor.formatOnPaste": true
+  }
 }

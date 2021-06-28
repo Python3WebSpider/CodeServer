@@ -4,6 +4,7 @@ RUN apt-get update && apt-get install -y \
     openssl \
     net-tools \
     git \
+    zsh \
     locales \
     sudo \
     dumb-init \
@@ -12,7 +13,16 @@ RUN apt-get update && apt-get install -y \
     wget \
     bash-completion \
     python3 \
-    python3-pip
+    python3-pip \
+    python3-setuptools \
+    build-essential \
+    python3-dev \
+    libssl-dev \
+    libffi-dev \
+    libxml2 \
+    libxml2-dev \
+    libxslt1-dev \
+    zlib1g-dev
 
 RUN chsh -s /bin/bash
 ENV SHELL=/bin/bash
@@ -28,33 +38,10 @@ RUN CODE_SERVER_VERSION=3.10.2 && \
     curl -sSOL https://github.com/cdr/code-server/releases/download/v${CODE_SERVER_VERSION}/code-server_${CODE_SERVER_VERSION}_amd64.deb && \
     sudo dpkg -i code-server_${CODE_SERVER_VERSION}_amd64.deb
 
-## kubectl
-RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl && \
-    chmod +x ./kubectl && \
-    mv ./kubectl /usr/local/bin/kubectl
-
-## helm
-RUN HELM_VERSION=v3.0.0 && \
-    mkdir /tmp/helm && \
-    curl -L https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz -o /tmp/helm/helm.tar.gz && \
-    tar xvf /tmp/helm/helm.tar.gz -C /tmp/helm/ && \
-    chmod +x /tmp/helm/linux-amd64/helm && \
-    sudo -S mv /tmp/helm/linux-amd64/helm /usr/local/bin/helm && \
-    rm -r /tmp/helm
-
-# kubectx/kubens/fzf
-RUN git clone https://github.com/ahmetb/kubectx /opt/kubectx && \
-    ln -s /opt/kubectx/kubectx /usr/local/bin/kubectx && \
-    ln -s /opt/kubectx/kubens /usr/local/bin/kubens && \
-    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf && \
-    ~/.fzf/install
-
 RUN locale-gen en_US.UTF-8
-# We unfortunately cannot use update-locale because docker will not use the env variables
-# configured in /etc/default/locale so we need to set it manually.
+
 ENV LC_ALL=en_US.UTF-8
 
-## User account
 RUN adduser --disabled-password --gecos '' coder && \
     adduser coder sudo && \
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers;
@@ -71,31 +58,34 @@ RUN git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf && \
 
 ENV PASSWORD=${PASSWORD:-P@ssw0rd}
 
-RUN echo "source <(kubectl completion bash)" >> /home/coder/.bashrc && \
-    echo 'export PS1="\[\e]0;\u@\h: \w\a\]\[\033[01;32m\]\u\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ "' >> /home/coder/.bashrc
-
 RUN /usr/bin/code-server --install-extension ms-python.python && \
     /usr/bin/code-server --install-extension esbenp.prettier-vscode && \
     /usr/bin/code-server --install-extension equinusocio.vsc-material-theme && \
     /usr/bin/code-server --install-extension codezombiech.gitignore && \
     /usr/bin/code-server --install-extension piotrpalarz.vscode-gitignore-generator && \
-    /usr/bin/code-server --install-extension ms-vscode.cpptools && \
     /usr/bin/code-server --install-extension aeschli.vscode-css-formatter && \
-    /usr/bin/code-server --install-extension ms-azuretools.vscode-docker && \
     /usr/bin/code-server --install-extension donjayamanne.githistory && \
     /usr/bin/code-server --install-extension ecmel.vscode-html-css && \
     /usr/bin/code-server --install-extension pkief.material-icon-theme && \
     /usr/bin/code-server --install-extension equinusocio.vsc-material-theme-icons && \
     /usr/bin/code-server --install-extension eg2.vscode-npm-script && \
-    /usr/bin/code-server --install-extension dbaeumer.vscode-eslint && \
-    /usr/bin/code-server --install-extension TabNine.tabnine-vscode
+    /usr/bin/code-server --install-extension dbaeumer.vscode-eslint
 
-RUN /usr/bin/python3 -m pip install requests aiohttp pyquery selenium pylint flask
+RUN /usr/bin/python3 -m pip install -U pip setuptools
+
+RUN /usr/bin/python3 -m pip install requests httpx scrapy aiohttp pyquery beautifulsoup4 \
+  selenium pyppeteer pylint flask django tornado numpy pandas scipy autopep8
 
 COPY settings.json /home/coder/.local/share/code-server/User/settings.json
+
+RUN sudo chown coder /home/coder/.local/share/code-server/User/settings.json
+
+COPY entrypoint.sh /home/coder/.local/entrypoint.sh
+
+RUN sudo chmod +x /home/coder/.local/entrypoint.sh
 
 WORKDIR /home/coder/workspace
 
 EXPOSE 8080
 
-ENTRYPOINT ["dumb-init", "fixuid", "-q", "/usr/bin/code-server", "--bind-addr", "0.0.0.0:8080", "."]
+ENTRYPOINT ["/bin/sh", "/home/coder/.local/entrypoint.sh"]
