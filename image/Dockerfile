@@ -48,7 +48,9 @@ RUN adduser --disabled-password --gecos '' coder && \
 
 RUN chmod g+rw /home && \
     mkdir -p /home/coder/workspace && \
+    mkdir -p /home/coder/.local && \
     chown -R coder:coder /home/coder && \
+    chown -R coder:coder /home/coder/.local && \
     chown -R coder:coder /home/coder/workspace;
 
 USER coder
@@ -57,6 +59,8 @@ RUN git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf && \
         ~/.fzf/install
 
 ENV PASSWORD=${PASSWORD:-P@ssw0rd}
+
+COPY ./extensions /home/coder/.local/extensions
 
 RUN /usr/bin/code-server --install-extension ms-python.python && \
     /usr/bin/code-server --install-extension esbenp.prettier-vscode && \
@@ -69,6 +73,8 @@ RUN /usr/bin/code-server --install-extension ms-python.python && \
     /usr/bin/code-server --install-extension pkief.material-icon-theme && \
     /usr/bin/code-server --install-extension equinusocio.vsc-material-theme-icons && \
     /usr/bin/code-server --install-extension eg2.vscode-npm-script && \
+    /usr/bin/code-server --install-extension ms-ceintl.vscode-language-pack-zh-hans && \
+    /usr/bin/code-server --install-extension /home/coder/.local/extensions/tkrkt.linenote-1.2.1.vsix && \
     /usr/bin/code-server --install-extension dbaeumer.vscode-eslint
 
 RUN /usr/bin/python3 -m pip install -U pip setuptools

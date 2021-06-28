@@ -3,6 +3,6 @@ services:
   code-server:
     container_name: "code-server"
     build: .
-    image: "germey/code-server:9"
+    image: "germey/code-server:10"
     ports:
       - "8080:8080"
