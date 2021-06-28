@@ -5,6 +5,6 @@ user: "user"
 # Basic Authentication Password
 password: "P@ssw0rd"
 # Image
-image: "germey/code-server:8"
+image: "germey/code-server:9"
 # Persistance
 persistance: "true"
